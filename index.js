@@ -27,7 +27,7 @@ app.listen(port, function() {
 app.post("/api/shorturl", function(req, res){
   const url = req.body.url;
 
-if (!vaildUrl.isWebUri(url)){
+if (!isVaildHttpUrl(url)){
   return res.json({ error: 'invalid url' })
 } 
 
@@ -44,3 +44,14 @@ res.json({
 })
 
 });
+
+//redirect url
+app.get("/api/shorturl/:short_url", function(req, res){
+  const shortUrl = req.params.short_url;
+
+  if (urlDatabase[shortUrl]){
+    return res.redirect(urlDatabase[shortUrl]);
+  } else {
+    return res.json({ error: "invalid url" });
+  }
+})
