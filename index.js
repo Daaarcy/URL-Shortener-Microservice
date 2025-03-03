@@ -25,8 +25,9 @@ let urlIdCounter = 1;
 //post url
 app.post("/api/shorturl", function(req, res){
   const url = req.body.url;
+  const urlRegex = /^(http|https):\/\/[a-zA-Z0-9]+([\-\.]{1}[a-zA-Z0-9]+)*\.[a-zA-Z]{2,}(:[0-9]{1,5})?(\/.*)?$/;
 
-  if (!url.startsWith('http')) {
+  if (!urlRegex.test(url)) {
     return res.json({ error: 'invalid url' });
   }
 
