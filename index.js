@@ -19,50 +19,40 @@ app.get('/api/hello', function(req, res) {
   res.json({ greeting: 'hello API' });
 });
 
-app.listen(port, function() {
-  console.log(`Listening on port ${port}`);
-});
-
-// check valid url
-function isValidHttpUrl(string) {
-  try {
-    const url = new URL(string);
-    return url.protocol === "http:" || url.protocol === "https:";
-  } catch (err) {
-    return false;
-  }
-}
+const urlDatabase = [];
+let urlIdCounter = 1;
 
 //post url
 app.post("/api/shorturl", function(req, res){
   const url = req.body.url;
 
-if (!isValidHttpUrl(url)){
-  return res.json({ error: 'invalid url' })
-} 
+  if (!original_url.startsWith('http')) {
+    return res.json({ error: 'invalid url' });
+  }
 
-let shortUrl = Object.keys(urlDatabase).find(key => urlDatabase[key] === url);
-
-if (!shortUrl){
-  shortUrl = counter;
-  urlDatabase[counter] = url;
-  counter++;
-}
+  urlDatabase.push({ original_url, short_url: urlIdCounter });
 
 res.json({
   original_url: url,
   short_url: Number(shortUrl)
 })
 
+urlIdCounter++;
+
 });
 
 //redirect url
 app.get("/api/shorturl/:short_url", function(req, res){
   const shortUrl = Number(req.params.short_url);
+  const url = urlDatabase.find(entry => entry.short_url == short_url);
 
-  if (urlDatabase[shortUrl]){
-    return res.redirect(urlDatabase[shortUrl]);
+  if (url){
+    res.redirect(url.original_url);
   } else {
-    return res.json({ error: "invalid url" });
+    res.json({ error: 'No short URL found for the given input' });
   }
 })
+
+app.listen(port, function() {
+  console.log(`Listening on port ${port}`);
+});
