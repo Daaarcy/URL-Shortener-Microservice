@@ -27,10 +27,11 @@ let urlIdCounter = 1;
 
 //post url
 app.post("/api/shorturl", function(req, res){
-  const url = req.body.url;
+  const originalUrl = req.body.url;
 
   try {
     const urlObject = new URL(originalUrl);
+    const hostname = urlObject.hostname;
     
     // Use dns.lookup to verify hostname
     dns.lookup(urlObject.hostname, (err) => {
@@ -39,13 +40,13 @@ app.post("/api/shorturl", function(req, res){
       }
 
   urlDatabase.push({ 
-    original_url: url, 
-    short_url: urlIdCounter 
+    original_url: originalUrl, 
+    short_url: shortUrl
   });
 
 res.json({
-  original_url: url,
-  short_url: urlIdCounter
+  original_url: originalUrl,
+  short_url: shortUrl
 })
 
 urlIdCounter++;
@@ -59,12 +60,12 @@ urlIdCounter++;
 //redirect url
 app.get("/api/shorturl/:short_url", function(req, res){
   const shortUrl = Number(req.params.short_url);
-  const url = urlDatabase.find(entry => entry.short_url === shortUrl);
+  const urlEntry = urlDatabase.find(entry => entry.short_url === shortUrl);
 
-  if (url){
-    res.redirect(url.original_url);
+  if (urlEntry){
+    return res.redirect(urlEntry.original_url);
   } else {
-    res.json({ error: 'No short URL found for the given input' });
+    return res.json({ error: 'No short URL found for the given input' });
   }
 })
 
