@@ -10,6 +10,9 @@ app.use(cors());
 
 app.use('/public', express.static(`${process.cwd()}/public`));
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 app.get('/', function(req, res) {
   res.sendFile(process.cwd() + '/views/index.html');
 });
