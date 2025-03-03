@@ -27,27 +27,28 @@ app.listen(port, function() {
 app.post("/api/shorturl", function(req, res){
   const url = req.body.url;
 
-if (!isVaildHttpUrl(url)){
+if (!isValidHttpUrl(url)){
   return res.json({ error: 'invalid url' })
 } 
 
 let shortUrl = Object.keys(urlDatabase).find(key => urlDatabase[key] === url);
 
 if (!shortUrl){
-  shortUrl = counter++;
-  urlDatabase[shortUrl] = url;
+  shortUrl = counter;
+  urlDatabase[counter] = url;
+  counter++;
 }
 
 res.json({
   original_url: url,
-  short_url: shortUrl
+  short_url: Number(shortUrl)
 })
 
 });
 
 //redirect url
 app.get("/api/shorturl/:short_url", function(req, res){
-  const shortUrl = req.params.short_url;
+  const shortUrl = Number(req.params.short_url);
 
   if (urlDatabase[shortUrl]){
     return res.redirect(urlDatabase[shortUrl]);
@@ -55,3 +56,7 @@ app.get("/api/shorturl/:short_url", function(req, res){
     return res.json({ error: "invalid url" });
   }
 })
+
+app.listen(port, function () {
+  console.log(`Listening on port ${port}`);
+});
