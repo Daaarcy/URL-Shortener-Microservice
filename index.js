@@ -23,6 +23,16 @@ app.listen(port, function() {
   console.log(`Listening on port ${port}`);
 });
 
+// check valid url
+function isValidHttpUrl(string) {
+  try {
+    const url = new URL(string);
+    return url.protocol === "http:" || url.protocol === "https:";
+  } catch (err) {
+    return false;
+  }
+}
+
 //post url
 app.post("/api/shorturl", function(req, res){
   const url = req.body.url;
@@ -56,7 +66,3 @@ app.get("/api/shorturl/:short_url", function(req, res){
     return res.json({ error: "invalid url" });
   }
 })
-
-app.listen(port, function () {
-  console.log(`Listening on port ${port}`);
-});
