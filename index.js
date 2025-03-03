@@ -26,15 +26,18 @@ let urlIdCounter = 1;
 app.post("/api/shorturl", function(req, res){
   const url = req.body.url;
 
-  if (!original_url.startsWith('http')) {
+  if (!url.startsWith('http')) {
     return res.json({ error: 'invalid url' });
   }
 
-  urlDatabase.push({ original_url, short_url: urlIdCounter });
+  urlDatabase.push({ 
+    original_url: url, 
+    short_url: urlIdCounter 
+  });
 
 res.json({
   original_url: url,
-  short_url: Number(shortUrl)
+  short_url: urlIdCounter
 })
 
 urlIdCounter++;
@@ -44,7 +47,7 @@ urlIdCounter++;
 //redirect url
 app.get("/api/shorturl/:short_url", function(req, res){
   const shortUrl = Number(req.params.short_url);
-  const url = urlDatabase.find(entry => entry.short_url == short_url);
+  const url = urlDatabase.find(entry => entry.short_url === shortUrl);
 
   if (url){
     res.redirect(url.original_url);
