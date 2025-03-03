@@ -28,11 +28,15 @@ let urlIdCounter = 1;
 //post url
 app.post("/api/shorturl", function(req, res){
   const url = req.body.url;
-  const urlRegex = /^(http|https):\/\/[a-zA-Z0-9]+([\-\.]{1}[a-zA-Z0-9]+)*\.[a-zA-Z]{2,}(:[0-9]{1,5})?(\/.*)?$/;
 
-  if (!urlRegex.test(url)) {
-    return res.json({ error: 'invalid url' });
-  }
+  try {
+    const urlObject = new URL(originalUrl);
+    
+    // Use dns.lookup to verify hostname
+    dns.lookup(urlObject.hostname, (err) => {
+      if (err) {
+        return res.json({ error: 'invalid url' });
+      }
 
   urlDatabase.push({ 
     original_url: url, 
@@ -46,6 +50,10 @@ res.json({
 
 urlIdCounter++;
 
+});
+} catch (error) {
+  return res.json({ error: 'invalid url' });
+}
 });
 
 //redirect url
